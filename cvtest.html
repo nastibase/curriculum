@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Curriculum de Sebastian Vargas</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #1e2e40;
+      color: #f0f0f0;
+    }
+    #intro {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #1e2e40;
+      color: #00c9a7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 2s ease;
+    }
+    header {
+      text-align: center;
+      padding: 2rem;
+      background-color: #253b5c;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: #00c9a7;
+    }
+
+    header p {
+      font-size: 1.2rem;
+      color: #ccc;
+    }
+
+    #globeViz {
+      height: 600px;
+      width: 100%;
+    }
+
+    .tooltip {
+      position: absolute;
+      background: #1b2d45;
+      padding: 10px;
+      border-radius: 8px;
+      pointer-events: none;
+      color: #fff;
+      border: 1px solid #00c9a7;
+      font-size: 14px;
+      display: none;
+      z-index: 10;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      right: -400px;
+      width: 350px;
+      height: 100%;
+      background-color: #1b2d45;
+      overflow-y: auto;
+      transition: right 0.4s ease;
+      padding: 1.5rem;
+      box-shadow: -4px 0 10px rgba(0,0,0,0.3);
+      z-index: 20;
+    }
+
+    .sidebar.visible {
+      right: 0;
+    }
+
+    .certificates-panel {
+      position: fixed;
+      top: 0;
+      left: -400px;
+      width: 350px;
+      height: 100%;
+      background-color: #1b2d45;
+      overflow-y: auto;
+      transition: left 0.4s ease;
+      padding: 1.5rem;
+      box-shadow: 4px 0 10px rgba(0,0,0,0.3);
+      z-index: 20;
+    }
+
+    .certificates-panel.visible {
+      left: 0;
+    }
+
+    .sidebar h3, .certificates-panel h3 {
+      color: #00c9a7;
+      margin-top: 0;
+    }
+
+    .project-card, .certificate-card {
+      margin-bottom: 1rem;
+      background-color: #263b5a;
+      border-radius: 8px;
+      padding: 1rem;
+    }
+
+    .project-card strong, .certificate-card strong {
+      color: #00c9a7;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #fff;
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      cursor: pointer;
+    }
+
+    .software-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
+    }
+
+    .software-item {
+      background-color: #263b5a;
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .flag {
+      width: 24px;
+      height: 16px;
+      margin-right: 10px;
+    }
+
+    .legend {
+      font-size: 0.9rem;
+      color: #ccc;
+      margin-top: 1.5rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    #satellite {
+      position: fixed;
+      top: 100px;
+      left: 20px;
+      background: #263b5a;
+      color: #00c9a7;
+      border-radius: 50%;
+      padding: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00c9a7;
+      z-index: 30;
+      transition: transform 0.3s ease;
+    }
+
+    #satellite:hover {
+      transform: scale(1.1);
+    }
+    #globeViz {
+      width: 100%;
+      height: 100vh;
+    }
+    /* Estilos para la tooltip */
+    #tooltip {
+      position: absolute;
+      display: none;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 10px;
+      border-radius: 5px;
+      color: white;
+      font-size: 14px;
+      pointer-events: none;
+      z-index: 10;
+    }
+    #satellite.hidden {
+      opacity: 0;
+      pointer-events: none; /* Desactivar clic cuando está oculto */
+    }
+  </style>
+</head>
+<body>
+  <div id="intro">Curriculum de Sebastian Vargas</div>
+
+  <script>
+    window.addEventListener('load', () => {
+      const intro = document.getElementById('intro');
+      setTimeout(() => {
+        intro.style.opacity = '0';
+        setTimeout(() => intro.remove(), 2000);
+      }, 2000);
+    });
+  </script>
+<header>
+  <h1>Sebastian Vicente Vargas Cuadrado – Ingeniero Civil</h1>
+  <p>Experiencia internacional</p>
+</header>
+
+<div id="globeViz"></div>
+<div class="tooltip" id="tooltip"></div>
+
+<!-- Sidebar derecho (experiencia y educación) -->
+<div class="sidebar" id="sidebar"></div>
+
+<!-- Sidebar izquierdo (certificados autodidactas) -->
+<div class="certificates-panel" id="certificatesPanel">
+  <button class="close-btn" id="closeCertificatesBtn">&times;</button>
+  <h3>🎓 Certificados digitales (autodidacta)</h3>
+  <div class="certificate-card">
+    <strong>Simulink Onramp</strong><br>
+    <em>Mathworks</em><br>
+    <small>Finalizado: Febrero 2025</small>
+  </div>
+  <div class="certificate-card">
+    <strong>Matlab Onramp</strong><br>
+    <em>Mathworks</em><br>
+    <small>Finalizado: Febrero 2021</small>
+  </div>
+  <div class="certificate-card">
+    <strong>Machine Learning Onramp</strong><br>
+    <em>Mathworks</em><br>
+    <small>Finalizado: Febrero 2023</small>
+  </div>
+  <div class="certificate-card">
+    <strong>Estudio de patologias, tecnicas de auscultacion y rehabilitacion de estructuras en concreto armado</strong><br>
+    <em>ConsultCreto</em><br>
+    <small>Finalizado: Agosto 2020</small>
+  </div>
+  <div class="certificate-card">
+    <strong>Tecnologia de concretos especiales en proyectos de construccion para mitigacion de desastres naturales</strong><br>
+    <em>ConsultCreto</em><br>
+    <small>Finalizado: Enero 2021</small>
+  </div>
+</div>
+
+<!-- Botón satélite -->
+<div id="satellite" title="Ver certificados">
+  <i class="fas fa-satellite"></i>
+</div>
+
+<section>
+  <section style="padding: 2rem; background-color: #1e2e40; margin-top: 4rem; position: relative; z-index: 10;"></section>
+  <h2>🧰 Software y Herramientas</h2>
+  <div class="software-grid">
+    <div class="software-item">Excel</div>
+    <div class="software-item">SQL</div>
+    <div class="software-item">Python</div>
+    <div class="software-item">Power BI</div>
+    <div class="software-item">Tableau</div>
+    <div class="software-item">R</div>
+    <div class="software-item">Google Data Studio</div>
+    <div class="software-item">Jupyter Notebook</div>
+  </div>
+</section>
+<section style="padding: 2rem; background-color: #1e2e40; position: relative; z-index: 10;">
+  <h2 style="color: #00c9a7;">🌐 Idiomas</h2>
+  <ul style="list-style: none; padding: 0; font-size: 1.1rem;">
+    <li>🇪🇸 Español: Nativo</li>
+    <li>🇬🇧 Inglés: Avanzado</li>
+    <li>🇧🇷 Portugués: Básico</li>
+    <li>🇫🇷 Francés: Básico</li>
+  </ul>
+</section>
+<script src="https://unpkg.com/three@0.150.1/build/three.min.js"></script>
+<script src="https://unpkg.com/globe.gl"></script>
+<script src="https://unpkg.com/topojson-client@3"></script>
+<script src="https://unpkg.com/d3-geo@3"></script>
+<script>
+  const pointsData = [
+    {
+      country: 'Spain',
+      lat: 40.4168,
+      lng: -3.7038,
+      project: 'Diseño Geometrico de la Nueva Carretera Central-Perú',
+      role: 'Becario',
+      tools: ['Python', 'SQL','Excel','AutoCad','Tilos'],
+      type: 'experience',
+      company: 'INECO',
+      startDate: 'Marzo 2025',
+      endDate: 'Actual'
+    },
+    {
+      country: 'Spain',
+      lat: 40.5,
+      lng: -3.7,
+      project: 'Máster en Planificación y Gestión de Infraestructuras',
+      role: 'Estudiante de máster',
+      tools: ['Excel','GAMS','Microsoft office'],
+      type: 'education',
+      company: 'Universidad Politecnica de Madrid',
+      startDate: 'Setiembre 2024',
+      endDate: 'Actual'
+    },
+    {
+      country: 'United States of America',
+      lat: 42.2780,
+      lng: -83.7382,
+      project: 'Python Data Structures, Capstone: Retrieving, Procesing and Visualizing DATA with Python, ACCESS WEB DATA',
+      role: 'Student',
+      tools: ['Python', 'R'],
+      type: 'education',
+      company: 'University of Michigan',
+      startDate: 'January 2022',
+      endDate: 'June 2022'
+    },
+    {
+      country: 'Peru',
+      lat: -12.00667,
+      lng: -77.0278,
+      project: 'Bachiller Ingeniería Civil',
+      role: 'Estudiante de carrera',
+      tools: ['SQL', 'AutCad','Microsfot Office','Civil3D','SAP2000','otros'],
+      type: 'education',
+      company: 'Universidad Peruana de Ciencias Aplicadas',
+      startDate: 'Marzo 2017',
+      endDate: 'Julio 2022'
+    },
+    {
+      country: 'Peru',
+      lat: -12.00667,
+      lng: -77.0278,
+      project: 'Ingeniero Civil',
+      role: 'Titulado',
+      tools: ['AutCad','Microsfot Office','Civil3D'],
+      type: 'education',
+      company: 'Universidad Peruana de Ciencias Aplicadas',
+      startDate: 'Julio 2022',
+      endDate: 'Enero 2023'
+    },
+    {
+      country: 'Peru',
+      lat: -12.0266,
+      lng: -76.8706,
+      project: 'Colegios del Bicentenario IE 1209 Mariscal Toribio de Luzuriaga',
+      role: 'Ingeniero de Oficina técnica',
+      tools: ['Excel', 'Primavera','Autocad'],
+      type: 'experience',
+      company: 'Jk Limaylla Contratistas Generales',
+      startDate: 'noviembre 2023',
+      endDate: 'abril 2024'
+    },
+    {
+      country: 'Peru',
+      lat: -11.9814,
+      lng: -76.8428,
+      project: 'Colegios del Bicentenario IE 1268 Mohme Llona',
+      role: 'Ingeniero Residente',
+      tools: ['Excel', 'Primavera','Autocad','S10'],
+      type: 'experience',
+      company: 'Jk Limaylla Contratistas Generales',
+      startDate: 'Mayo 2024',
+      endDate: 'Julio 2024'
+    },
+    {
+      country: 'Peru',
+      lat: -6.0328,
+      lng: -76.9714,
+      project: 'Proyecto de mantenimiento para recategorizacion de Hospital de Nueva Rioja I-4',
+      role: 'Ingeniero asistente de Oficina técnica',
+      tools: ['Excel', 'Primavera','Autocad','S10',''],
+      type: 'experience',
+      company: 'OGESS Alto Mayo',
+      startDate: 'Abril 2023',
+      endDate: 'Julio 2023'
+    },
+    {
+      country: 'Peru',
+      lat: -6.0328,
+      lng: -76.9714,
+      project: 'Mejoramiento de infraestructura para obtencion de certificado regional de recreo turistico',
+      role: 'Ingeniero de estrucutras',
+      tools: ['Excel','Autocad','S10','MSProject'],
+      type: 'experience',
+      company: 'Fundo El Colibri SAC',
+      startDate: 'Octubre 2022',
+      endDate: 'Marzo 2023'
+    },
+    {
+      country: 'Peru',
+      lat: -12.0266,
+      lng: -76.8706,
+      project: 'Estudio definitivo del proyecto: CONSTRUCCIÓN DE PUENTES POR REEMPLAZO EN HUANUCO-UCAYALI',
+      role: 'Asistente en ingeniería civil',
+      tools: ['Excel','Autocad','S10','KMZ','Civil3D'],
+      type: 'experience',
+      company: 'PROVIAS Nacional',
+      startDate: 'Julio 2021',
+      endDate: 'Julio 2022'
+    },
+    {
+      country: 'Peru',
+      lat: -12.0266,
+      lng: -76.8706,
+      project: 'Mejoramiento de la serviciabilidad de la Av.Villaran-Surquillo-Lima',
+      role: 'Practicante',
+      tools: ['Excel','Autocad','PrimaveraP6','Civil3D','ArcGis','GlobalMapper'],
+      type: 'experience',
+      company: 'EMAPE',
+      startDate: 'Enero 2021',
+      endDate: 'Julio 2021'
+    },
+    {
+      country: 'Peru',
+      lat: -12.0266,
+      lng: -76.8706,
+      project: 'Metro 2 de Lima',
+      role: 'Practicante',
+      tools: ['Microsoft Office'],
+      type: 'experience',
+      company: 'Consorcio Metro 2 de Lima',
+      startDate: 'Agosto 2019',
+      endDate: 'Noviembre 2019'
+    }
+  ];
+  
+  const countryNamesInSpanish = {
+    Spain: 'España',
+    Mexico: 'México',
+    Chile: 'Chile',
+    Peru: 'Perú',
+    'United States of America': 'Estados Unidos'
+  };
+  
+  const flags = {
+    Spain: 'https://upload.wikimedia.org/wikipedia/commons/9/9a/Flag_of_Spain.svg',
+    Mexico: 'https://upload.wikimedia.org/wikipedia/commons/6/64/Flag_of_Mexico.svg',
+    Chile: 'https://upload.wikimedia.org/wikipedia/commons/7/78/Flag_of_Chile.svg',
+    'United States of America': 'https://upload.wikimedia.org/wikipedia/commons/a/a4/Flag_of_the_United_States.svg',
+    Peru: 'https://upload.wikimedia.org/wikipedia/commons/c/cf/Flag_of_Peru.svg'
+  };
+  
+  const tooltip = document.getElementById('tooltip');
+      document.addEventListener('mousemove', (e) => {
+      tooltip.style.left = `${e.clientX + 10}px`;
+      tooltip.style.top = `${e.clientY + 10}px`;
+    });
+  const sidebar = document.getElementById('sidebar');
+  const satellite = document.getElementById('satellite');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 800) {
+        satellite.classList.add('hidden');
+      } else {
+        satellite.classList.remove('hidden');
+      }
+    });
+  const certificatesPanel = document.getElementById('certificatesPanel');
+  const closeCertificatesBtn = document.getElementById('closeCertificatesBtn');
+  const satelliteButton = document.getElementById('satellite-button');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 10000) {
+        satelliteButton.classList.add('hidden');
+      } else {
+        satelliteButton.classList.remove('hidden');
+      }
+    });
+  const globe = Globe()(document.getElementById('globeViz'))
+    .globeImageUrl('//unpkg.com/three-globe/example/img/earth-dark.jpg')
+    .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
+    .showAtmosphere(true)
+    .atmosphereColor('#00c9a7')
+    .backgroundColor('#1e2e40')
+    .pointsData(pointsData)
+    .pointAltitude(0.02)
+    .pointColor(d => d.type === 'experience' ? '#00c9a7' : '#ff5733')
+    .onPointHover(point => {
+      tooltip.innerHTML = point ? `
+        <strong>País:</strong> ${countryNamesInSpanish[point.country] || point.country}<br>
+        <strong>Proyecto:</strong> ${point.project}<br>
+        <strong>Empresa/Institución:</strong> ${point.company || '—'}<br>
+        <strong>Duración:</strong> ${point.startDate || ''} - ${point.endDate || ''}<br>
+        <strong>Cargo:</strong> ${point.role}<br>
+        <strong>Software:</strong> ${point.tools.join(', ')}` : '';
+      tooltip.style.display = point ? 'block' : 'none';
+    });
+  
+  window.addEventListener('mousemove', ev => {
+    tooltip.style.left = ev.pageX + 10 + 'px';
+    tooltip.style.top = ev.pageY + 10 + 'px';
+  });
+  
+  fetch('https://unpkg.com/world-atlas@2/countries-110m.json')
+    .then(res => res.json())
+    .then(countriesTopo => {
+      const countries = topojson.feature(countriesTopo, countriesTopo.objects.countries).features;
+      globe
+        .polygonsData(countries)
+        .polygonAltitude(0.01)
+        .polygonCapColor(feat => pointsData.some(p => p.country === feat.properties.name) ? 'rgba(0, 201, 167, 0.3)' : 'rgba(255,255,255,0.05)')
+        .polygonSideColor(() => 'rgba(0, 255, 255, 0.05)')
+        .polygonStrokeColor(() => '#00c9a7')
+        .onPolygonClick(feat => showCountryProjects(feat.properties.name)); // no cambio aquí
+    });
+  
+    function showCountryProjects(country) {
+  const projects = pointsData.filter(p => p.country === country);
+  const countryInSpanish = countryNamesInSpanish[country] || country;
+
+  // Filtra solo experiencia y educación
+  const relevantProjects = projects.filter(p => p.type === 'experience' || p.type === 'education');
+
+  // Si no hay experiencia ni educación, no hacer zoom
+  if (relevantProjects.length > 0) {
+    const lat = relevantProjects[0].lat;
+    const lng = relevantProjects[0].lng;
+
+    globe.pointOfView({ lat: lat, lng: lng, altitude: 0.5 }, 1500);
+  }
+
+  // Actualizar contenido del sidebar
+  sidebar.innerHTML = `<button class="close-btn" id="closeSidebarBtn">&times;</button><h3>${countryInSpanish}</h3>`;
+
+  if (relevantProjects.length === 0) {
+    sidebar.innerHTML += '<p>🌍 Espero algún día poder participar en un proyecto en este país.</p>';
+  } else {
+    const experiences = relevantProjects.filter(p => p.type === 'experience');
+    const educations = relevantProjects.filter(p => p.type === 'education');
+
+    if (experiences.length > 0) {
+      sidebar.innerHTML += '<h4>🏢Proyectos</h4>';
+      experiences.forEach(p => {
+        sidebar.innerHTML += `
+          <div class="project-card">
+            <img src="${flags[p.country]}" alt="flag" class="flag">
+            <strong>${p.project}</strong><br>
+            <em>${p.role}</em><br>
+            <small style="font-style: italic; color: #aaa;">${p.startDate || ''} - ${p.endDate || ''}</small><br>
+            <small>Empresa: ${p.company || '—'}</small><br>
+            <small>Software usado: ${p.tools.join(', ')}</small>
+          </div>
+        `;
+      });
+    }
+
+    if (educations.length > 0) {
+      sidebar.innerHTML += '<h4>🎓Educación</h4>';
+      educations.forEach(p => {
+        sidebar.innerHTML += `
+          <div class="project-card">
+            <img src="${flags[p.country]}" alt="flag" class="flag">
+            <strong>${p.project}</strong><br>
+            <em>${p.role}</em><br>
+            <small style="font-style: italic; color: #aaa;">${p.startDate || ''} - ${p.endDate || ''}</small><br>
+            <small>Centro de estudios: ${p.company || '—'}</small><br>
+            <small>Software usado: ${p.tools.join(', ')}</small>
+          </div>
+        `;
+      });
+    }
+
+    sidebar.innerHTML += ` 
+      <h4>🗺️ Leyenda de Pins</h4>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-color" style="background:#00c9a7"></div>Experiencia</div>
+        <div class="legend-item"><div class="legend-color" style="background:#ff5733"></div>Educación</div>
+      </div>
+    `;
+  }
+
+  sidebar.classList.add('visible');
+  document.getElementById('closeSidebarBtn').onclick = () => sidebar.classList.remove('visible');
+}
+  
+  // Mostrar certificados
+  satellite.onclick = () => {
+    certificatesPanel.classList.toggle('visible');
+  };
+  closeCertificatesBtn.onclick = () => certificatesPanel.classList.remove('visible');
+  </script>
+  <section style="background-color: #253b5c; padding: 2rem; text-align: center; margin-top: 3rem;">
+    <h2 style="color: #00c9a7;">📞 Contáctame</h2>
+    <p style="font-size: 1.1rem; margin: 0.5rem 0;">
+      <strong>Teléfono:</strong> <a href="tel:+34692482163" style="color: #f0f0f0; text-decoration: none;">692 482 163</a>
+    </p>
+    <p style="font-size: 1.1rem; margin: 0.5rem 0;">
+      <strong>Correo:</strong> <a href="mailto:sevacu09073@gmail.com" style="color: #f0f0f0; text-decoration: none;">sevacu09073@gmail.com</a>
+    </p>
+  </section>
+
+</body>
+</html>
